@@ -1,16 +1,9 @@
-import os
 import redis
 import logging
 
 from abc import ABC, abstractmethod
 
 from core.parsers import BASE62, encode
-
-
-REDIS_NAME_PREFIX = os.getenv('REDIS_PREFIX', 'tinyurl')
-REDIS_NAME_SHORT = '{prefix}:short'.format(prefix=REDIS_NAME_PREFIX)
-REDIS_NAME_LONG = '{prefix}:long'.format(prefix=REDIS_NAME_PREFIX)
-REDIS_MAX_ATTEMPTS = os.getenv('REDIS_MAX_ATTEMPTS', 10)
 
 
 class TinyURLService(ABC):
@@ -33,6 +26,11 @@ class TinyURLService(ABC):
 
 class TinyURLServiceRedis(TinyURLService):
 
+    REDIS_MAX_ATTEMPTS = 10
+    REDIS_NAME_PREFIX = 'tinyurl'
+    REDIS_NAME_SHORT = '{prefix}:short'.format(prefix=REDIS_NAME_PREFIX)
+    REDIS_NAME_LONG = '{prefix}:long'.format(prefix=REDIS_NAME_PREFIX)
+
     def __init__(self, logging_handler, get_redis_client):
         self.logger = logging.getLogger()
         self.logger.addHandler(logging_handler)
@@ -40,7 +38,7 @@ class TinyURLServiceRedis(TinyURLService):
 
     def get_short_id(self, long_url):
         current_short_id = self.get_redis_client().hget(
-            name=REDIS_NAME_SHORT, key=long_url)
+            name=self.REDIS_NAME_SHORT, key=long_url)
         if current_short_id is not None:
             return current_short_id.decode()  # Return as string
 
@@ -53,7 +51,7 @@ class TinyURLServiceRedis(TinyURLService):
         long_url -- The string to translate.
         """
         with self.get_redis_client().pipeline() as pipe:
-            for attempt in range(1, REDIS_MAX_ATTEMPTS + 1):
+            for attempt in range(1, self.REDIS_MAX_ATTEMPTS + 1):
                 self.logger.info(
                     'Attempt {attempt} to get or create id from {url}'.format(
                         attempt=attempt, url=long_url))
@@ -63,33 +61,35 @@ class TinyURLServiceRedis(TinyURLService):
                     if current_id is not None:
                         return current_id
                     # WATCH on the key that holds sequence number.
-                    pipe.watch(REDIS_NAME_SHORT)
+                    pipe.watch(self.REDIS_NAME_SHORT)
                     # The pipeline is now in immediate execution mode until
                     # commands are buffered again.
                     # Determine the next id.
-                    length = pipe.hlen(name=REDIS_NAME_SHORT)
+                    length = pipe.hlen(name=self.REDIS_NAME_SHORT)
                     next_id = encode(length, BASE62)
                     # With MULTI, the pipeline is now in buffered mode.
                     pipe.multi()
                     # If key exists do nothing,
                     # otherwise assign value to next id.
                     pipe.hsetnx(
-                        name=REDIS_NAME_SHORT, key=long_url, value=next_id)
+                        name=self.REDIS_NAME_SHORT,
+                        key=long_url, value=next_id)
                     pipe.execute()
                 except redis.exceptions.WatchError:
                     self.logger.info(
                         'An asynchronous event modified the watched name '
-                        '{redis_name} before it could be modified.'.format(
-                            redis_name=REDIS_NAME_SHORT))
+                        '{name} before it could be modified.'.format(
+                            name=self.REDIS_NAME_SHORT))
                     continue
         raise Exception('Failed to get or create id for long')  # TODO
 
     def get_long_url(self, short_id):
-        return self.get_redis_client().hget(name=REDIS_NAME_LONG, key=short_id)
+        return self.get_redis_client().hget(
+            name=self.REDIS_NAME_LONG, key=short_id)
 
     def update_long_url(self, short_id, long_url):
         if self.get_redis_client().hsetnx(
-                name=REDIS_NAME_LONG, key=short_id, value=long_url):
+                name=self.REDIS_NAME_LONG, key=short_id, value=long_url):
             return True  # Modified
         else:
             return False  # Not modified

@@ -13,7 +13,7 @@ def make():
     form = MakeForm()
     if form.validate_on_submit():
         long_url = request.form.get('url')
-        return _create_short(long_url)
+        return _make_short(long_url)
     return render_template('tinyurl/make.html', form=form)
 
 
@@ -46,7 +46,7 @@ def get_short():
         return short_id, 200
 
 
-def _create_short(long_url):
+def _make_short(long_url):
     # Sanitize user input
     validate_long_url(long_url)
     # Determine the short id
@@ -66,14 +66,14 @@ def _create_short(long_url):
 
 
 @blueprint.route('/tinyurl', methods=['POST'])
-def create_short():
+def make_short():
     # Sanitize user input
     if not request.is_json:
         raise BadRequest('Request body is not json')
     body = request.get_json()
     long_url = body.get('url')
     # ...
-    return _create_short(long_url)
+    return _make_short(long_url)
 
 
 @blueprint.route('/<string:short_id>', methods=['GET'])

@@ -1,24 +1,17 @@
 import os
 
-from flask import Flask, g
-from flask.logging import default_handler
+from flask import Flask
 
-from app import redis
-from services.tinyurl import TinyURLServiceRedis
+from app import redis, tinyurl
 
 
-def create_app():
+def create_app(testing=False):
     app = Flask(__name__)
+    app.config['TESTING'] = testing
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'superman-batman')
 
     redis.init_app(app)
-
-    @app.before_request
-    def before_request():
-        if 'tinyurl' not in g:
-            g.tinyurl = TinyURLServiceRedis(
-                logging_handler=default_handler,
-                get_redis_client=redis.get_client)
+    tinyurl.init_app(app)
 
     from app.errors import blueprint as errors_blueprint
     app.register_blueprint(errors_blueprint)

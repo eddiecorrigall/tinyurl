@@ -19,6 +19,7 @@ A tinyurl clone service
 - http://werkzeug.palletsprojects.com/en/0.16.x/exceptions/
 - https://flask.palletsprojects.com/en/1.1.x/appcontext/
 - https://flask.palletsprojects.com/en/1.1.x/logging/
+- https://flask.palletsprojects.com/en/1.1.x/testing/
 
 ## Technique
 
