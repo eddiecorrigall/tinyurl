@@ -1,18 +1,6 @@
 import pytest
 
-from flask import current_app, url_for
-
-
-class TestFlaskApp(object):
-    def test_app_configured_for_testing(self, app):
-        """ Test that the application set TESTING config to True """
-        with app.app_context():
-            assert app.config['TESTING'] is True
-
-    def test_app_context_is_current_app(self, app):
-        """ Test that current_app is the same instance as app """
-        with app.app_context():
-            assert current_app.name == app.name
+from flask import url_for
 
 
 class TestIntegrationTinyURLAPI(object):
@@ -112,42 +100,6 @@ class TestIntegrationTinyURLAPI(object):
                     location = response.headers.get('Location')
                     assert location is not None
                     assert location == long_url
-                if body_substring is not None:
-                    body = response.data.decode()
-                    assert body_substring in body
-
-
-class TestIntegrationTinyURLForm(object):
-    def test_make_form_get(self, app):
-        with app.app_context():
-            with app.test_client() as client:
-                response = client.get(
-                    url_for('tinyurl.make_form'))
-                body = response.data.decode()
-                assert 'name="url"' in body
-                assert 'name="submit"' in body
-
-    @pytest.mark.parametrize(
-        ['long_url', 'status_code', 'is_redirected', 'body_substring'],
-        [
-            ('http://youtube.com', 304, True, None),
-            ('http://example.com', 304, True, None),
-            ('http://youtube.com', 200, False, 'URL is already a TinyURL'),
-        ]
-    )
-    def test_make_form_post(
-            self, app,
-            long_url, status_code, is_redirected, body_substring):
-        with app.app_context():
-            with app.test_client() as client:
-                response = client.post(
-                    url_for('tinyurl.make_form'),
-                    data={'url': long_url})
-                if is_redirected:
-                    location = response.headers.get('Location')
-                    assert location is not None
-                    assert location.endswith(
-                        url_for('tinyurl.get_short', url=long_url))
                 if body_substring is not None:
                     body = response.data.decode()
                     assert body_substring in body
