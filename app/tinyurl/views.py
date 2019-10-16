@@ -9,7 +9,7 @@ from app.tinyurl.forms import MakeForm
 
 
 @blueprint.route('/', methods=['GET', 'POST'])
-def make():
+def make_form():
     form = MakeForm()
     if form.validate_on_submit():
         long_url = request.form.get('url')

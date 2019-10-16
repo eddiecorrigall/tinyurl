@@ -18,11 +18,7 @@ def is_url(string):
     Arguments:
     string -- The string to test.
     """
-    try:
-        validators.url(string)
-        return True
-    except validators.ValidationFailure:
-        return False
+    return validators.url(string) is True
 
 
 def parse_url(url):
