@@ -11,7 +11,7 @@ class TestIntegrationTinyURLAPI(object):
             ('https://www.google.ca/maps', 303, True, None),
             ('https://en.wikipedia.org/wiki/TinyURL', 304, True, None),
             ('', 400, False, 'Request url is empty or not defined'),
-            ('invalid url', 400, False, 'Request url is invalid'),
+            ('invalid url', 400, False, 'Request url failed to parse'),
             ('http://localhost.localdomain:5000', 400, False,
                 'Request url is self-referencing'),
         ]

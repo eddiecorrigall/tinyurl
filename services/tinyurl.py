@@ -4,6 +4,12 @@ import logging
 from abc import ABC, abstractmethod
 
 from core.parsers import BASE62, encode
+from services.exceptions import ServiceException
+
+
+class TinyURLServiceException(ServiceException):
+    def __init__(self, *args, **kwargs):
+        super.__init__('TinyURL Service Exception', *args, **kwargs)
 
 
 class TinyURLService(ABC):
@@ -26,7 +32,7 @@ class TinyURLService(ABC):
 
 class TinyURLServiceRedis(TinyURLService):
 
-    REDIS_MAX_ATTEMPTS = 10
+    REDIS_MAX_ATTEMPTS = 100
     REDIS_NAME_PREFIX = 'tinyurl'
     REDIS_NAME_SHORT = '{prefix}:short'.format(prefix=REDIS_NAME_PREFIX)
     REDIS_NAME_LONG = '{prefix}:long'.format(prefix=REDIS_NAME_PREFIX)
@@ -81,7 +87,7 @@ class TinyURLServiceRedis(TinyURLService):
                         '{name} before it could be modified.'.format(
                             name=self.REDIS_NAME_SHORT))
                     continue
-        raise Exception('Failed to get or create id for long')  # TODO
+        raise TinyURLServiceException('Failed to get or create id for long')
 
     def get_long_url(self, short_id):
         return self.get_redis_client().hget(

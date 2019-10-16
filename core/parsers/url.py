@@ -25,20 +25,21 @@ def parse_url(url):
     """Return a tuple given a string,
     first item is an URL, second item indicates parse error.
 
+    Exceptions:
+    ValueError, TypeError
+
     Arguments:
     url -- The url string to parse.
     """
-    try:
-        url_obj = urlparse(url)
-        return URL(
-            scheme=url_obj.scheme,
-            path=url_obj.path,
-            query=url_obj.query,
-            fragment=url_obj.fragment,
-            username=url_obj.username,
-            password=url_obj.password,
-            hostname=url_obj.hostname,
-            port=url_obj.port), False
-    except ValueError:
-        pass
-    return URL(), True
+    if not is_url(url):
+        raise ValueError('Invalid url')
+    url_obj = urlparse(url)
+    return URL(
+        scheme=url_obj.scheme or None,
+        path=url_obj.path or None,
+        query=url_obj.query or None,
+        fragment=url_obj.fragment or None,
+        username=url_obj.username or None,
+        password=url_obj.password or None,
+        hostname=url_obj.hostname or None,
+        port=url_obj.port or None)

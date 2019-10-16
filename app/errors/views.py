@@ -2,6 +2,7 @@ from flask import current_app, jsonify
 from werkzeug.exceptions import HTTPException
 
 from app.errors import blueprint
+from services.exceptions import ServiceException
 
 
 def _handle_error(message, status_code, exception=None):
@@ -24,3 +25,19 @@ def handle_bad_request(http_error):
         message=http_error.description,
         status_code=http_error.code,
         exception=http_error)
+
+
+@blueprint.app_errorhandler(ServiceException)
+def handle_service_exception(service_exception):
+    return _handle_error(
+        message=str(service_exception) or 'Service Exception',
+        status_code=500,
+        exception=service_exception)
+
+
+@blueprint.app_errorhandler(Exception)
+def handle_generic_exception(exception):
+    return _handle_error(
+        message='Internal Server Error',
+        status_code=500,
+        exception=exception)

@@ -1,7 +1,7 @@
 from flask import g, current_app, redirect, render_template, request, url_for
-from werkzeug.exceptions import BadRequest, NotFound
+from werkzeug.exceptions import BadRequest, NotFound, InternalServerError
 
-from core.parsers import is_url, parse_url
+from core.parsers import parse_url
 
 
 from app.tinyurl import blueprint
@@ -21,11 +21,15 @@ def validate_long_url(long_url):
     # Sanitize user input
     if not long_url:
         raise BadRequest('Request url is empty or not defined')
-    if not is_url(long_url):
-        raise BadRequest('Request url is invalid')
     # Check if request is self-referencing
-    url_obj, _ = parse_url(long_url)
-    app_url_obj, _ = parse_url(request.base_url)
+    try:
+        url_obj = parse_url(long_url)
+    except ValueError:
+        raise BadRequest('Request url failed to parse')
+    try:
+        app_url_obj = parse_url(request.base_url)
+    except ValueError:
+        raise InternalServerError('Request base url failed to parse')
     if url_obj.hostname == app_url_obj.hostname:
         if url_obj.port == app_url_obj.port:
             raise BadRequest('Request url is self-referencing')
