@@ -1,13 +1,15 @@
 # tinyurl
 A tinyurl clone service
 
-## TODO
-- App configuration
-- Doc strings
-- Unit tests
-- Deployment
-- Do we need to check for javascript injection?
-
+## Features
+- [todo] App configuration
+- [todo] Python linter
+- [todo] Doc strings
+- [done] Test environment
+- [done] Deployment environment
+- [todo] Production environment (AWS Lambda, AWS ElastiCache: Redis)
+- [todo] Continuous Integration (Circle CI or Travis CI)
+- [todo] Internationalization (i18n)
 
 ## References
 - https://stackoverflow.com/questions/742013/how-do-i-create-a-url-shortener
