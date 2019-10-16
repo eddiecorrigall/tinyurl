@@ -16,9 +16,10 @@ class TestIntegrationTinyURLForm(object):
     @pytest.mark.parametrize(
         ['long_url', 'status_code', 'is_redirected', 'body_substring'],
         [
-            ('http://youtube.com', 304, True, None),
-            ('http://example.com', 304, True, None),
+            ('http://youtube.com', 303, True, None),
+            ('http://example.com', 303, True, None),
             ('http://youtube.com', 200, False, 'URL is already a TinyURL'),
+            ('localhost', 200, False, 'URL is invalid'),
         ]
     )
     def test_make_form_post(
@@ -29,11 +30,12 @@ class TestIntegrationTinyURLForm(object):
                 response = client.post(
                     url_for('tinyurl.make_form'),
                     data={'url': long_url})
+                assert status_code == response.status_code
                 if is_redirected:
                     location = response.headers.get('Location')
                     assert location is not None
                     assert location.endswith(
-                        url_for('tinyurl.get_short', url=long_url))
+                        url_for('tinyurl.get_short', url=long_url, html=True))
                 if body_substring is not None:
                     body = response.data.decode()
                     assert body_substring in body
