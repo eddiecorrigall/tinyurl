@@ -10,17 +10,19 @@ from flask import g
 from flask.logging import default_handler
 
 from app import redis
-
+from core.logger import root_logger as logger
 from services.tinyurl import TinyURLServiceRedis
 
 
 def _get_service():
+    logger.info('Creating TinyURLServiceRedis() instance')
     return TinyURLServiceRedis(
         logging_handler=default_handler,
         get_redis_client=redis.get_instance(testing=False))
 
 
 def _get_test_service():
+    logger.info('Creating TinyURLServiceRedis() instance')
     return TinyURLServiceRedis(
         logging_handler=default_handler,
         get_redis_client=redis.get_instance(testing=True))

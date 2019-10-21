@@ -3,6 +3,7 @@ import os
 from flask import Flask
 
 from app import redis, tinyurl
+from core import logger
 
 
 def create_app(testing=False):
@@ -13,6 +14,7 @@ def create_app(testing=False):
     app.config['WTF_CSRF_SECRET_KEY'] = (
         os.getenv('WTF_CSRF_SECRET_KEY', 'batman'))
 
+    logger.init_app(app)
     redis.init_app(app)
     tinyurl.init_app(app)
 

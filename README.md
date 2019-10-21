@@ -10,6 +10,9 @@ A tinyurl clone service
 - [todo] Production environment (AWS Lambda, AWS ElastiCache: Redis)
 - [todo] Continuous Integration (Circle CI or Travis CI)
 - [todo] Internationalization (i18n)
+- [todo] Test app error handlers
+- [todo] Integration tests: local redis server and read-only
+- [todo] Rename serverless function in template
 
 ## References
 - https://stackoverflow.com/questions/742013/how-do-i-create-a-url-shortener
@@ -68,20 +71,13 @@ Redis supports HSET and HGET which does not suffer from hot partitions and will 
 - Pro: light-weight infrastructure
 - Pro: scalable
 
-## Local Dev
-
+## Setup Project
 ```bash
-# Bootstrap project
-npm install
-npm install -g serverless
-python venv --python=python3
-source venv/bin/activate
-pip install -r requirements.txt
+# Setup project
+sh bin/setup.sh
 
-# Install Redis Server
-brew install redis
-brew upgrade redis
-brew services start redis
+# Run all tests
+sh bin/tests.sh
 
 # Run locally
 serverless wsgi serve
@@ -89,11 +85,20 @@ serverless wsgi serve
 
 ## Example
 
+### Set Endpoint
+```bash
+# Local development: `serverless wsgi serve`
+export TINYURL_ENDPOINT=http://localhost:5000
+
+# OR, deployed: `serverless deploy`
+export TINYURL_ENDPOINT=https://xg8hjfwp7d.execute-api.us-east-1.amazonaws.com/development
+```
+
 ### Make TinyURL
 ```bash
 curl \
     --write-out '%{http_code}\n' \
-    --request POST 'http://localhost:5000/tinyurl' \
+    --request POST "${TINYURL_ENDPOINT}/tinyurl" \
     --header 'Content-Type: application/json' \
     --data '{"url": "http://example.com"}'
 ```
@@ -102,12 +107,22 @@ curl \
 ```bash
 curl \
     --write-out '%{http_code}\n' \
-    --request GET 'http://localhost:5000/tinyurl?url=http://example.com'
+    --request GET "${TINYURL_ENDPOINT}/tinyurl?url=http://example.com"
 ```
 
 ### Redirect from TinyURL
 ```bash
 curl \
     --write-out '%{http_code}\n' \
-    --request GET 'http://localhost:5000/a'
+    --request GET "${TINYURL_ENDPOINT}/a"
 ```
+
+## Commands
+
+|Command|Description|
+|---|---|
+|`sh bin/setup.sh`|Setup project|
+|`sh bin/test.sh`|Run tests|
+|`sh bin/run.sh`|Run locally|
+|`sh bin/deploy.sh`|Deploy to cloud|
+|`sh bin/logs.sh`|Get logs from cloud|

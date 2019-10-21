@@ -1,4 +1,5 @@
 from flask import current_app, jsonify
+from redis.exceptions import RedisError
 from werkzeug.exceptions import HTTPException
 
 from app.errors import blueprint
@@ -30,9 +31,17 @@ def handle_bad_request(http_error):
 @blueprint.app_errorhandler(ServiceException)
 def handle_service_exception(service_exception):
     return _handle_error(
-        message=str(service_exception) or 'Service Exception',
+        message='Internal Server Error: Service Exception',
         status_code=500,
         exception=service_exception)
+
+
+@blueprint.app_errorhandler(RedisError)
+def handle_redis_error(redis_error):
+    return _handle_error(
+        message='Internal Server Error: Database Failure',
+        status_code=500,
+        exception=redis_error)
 
 
 @blueprint.app_errorhandler(Exception)
