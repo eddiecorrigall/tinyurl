@@ -1,10 +1,7 @@
 from flask import g, current_app, redirect, render_template, request
 from werkzeug.exceptions import BadRequest, NotFound
 
-
-from app.tinyurl import blueprint
-
-from app.tinyurl import common
+from app.tinyurl import common, blueprint
 from app.tinyurl.forms import MakeForm
 
 

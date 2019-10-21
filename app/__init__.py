@@ -2,8 +2,9 @@ import os
 
 from flask import Flask
 
-from app import tinyurl
-from core import logger, redis
+import core.logger
+import core.redis
+import core.tinyurl
 
 
 def create_app(testing=False):
@@ -14,9 +15,9 @@ def create_app(testing=False):
     app.config['WTF_CSRF_SECRET_KEY'] = (
         os.getenv('WTF_CSRF_SECRET_KEY', 'batman'))
 
-    logger.init_app(app)
-    redis.init_app(app)
-    tinyurl.init_app(app)
+    core.logger.init_app(app)
+    core.redis.init_app(app)
+    core.tinyurl.init_app(app)
 
     from app.errors import blueprint as errors_blueprint
     app.register_blueprint(errors_blueprint)
