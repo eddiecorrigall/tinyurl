@@ -9,7 +9,7 @@ from app.tinyurl import views  # Load views
 from flask import g
 from flask.logging import default_handler
 
-from app import redis
+from core import redis
 from core.logger import root_logger as logger
 from services.tinyurl import TinyURLServiceRedis
 

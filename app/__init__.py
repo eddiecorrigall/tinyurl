@@ -2,8 +2,8 @@ import os
 
 from flask import Flask
 
-from app import redis, tinyurl
-from core import logger
+from app import tinyurl
+from core import logger, redis
 
 
 def create_app(testing=False):
