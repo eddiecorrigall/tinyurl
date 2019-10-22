@@ -1,6 +1,8 @@
 node_modules
 package-lock.json
 .serverless/
+.requirements.zip
+.requirements/
 
 venv
 **/__pycache__

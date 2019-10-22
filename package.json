@@ -13,6 +13,7 @@
   "author": "Eddie Corrigall <eddiecorrigall@gmail.com> (http://github.com/eddiecorrigall)",
   "license": "ISC",
   "devDependencies": {
+    "serverless-domain-manager": "^3.3.0",
     "serverless-python-requirements": "^5.0.0",
     "serverless-wsgi": "^1.7.3"
   }

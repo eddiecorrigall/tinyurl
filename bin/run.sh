@@ -2,6 +2,8 @@
 
 set -e
 
+. venv/bin/activate
+
 # Test first
 sh bin/test.sh
 

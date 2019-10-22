@@ -1,14 +1,25 @@
-service: serverless-flask
+service: sls-tinyurl
 
 plugins:
   - serverless-python-requirements
   - serverless-wsgi
+  - serverless-domain-manager
 
 custom:
+  pythonRequirements:
+    fileName: requirements.txt
+    zip: true
   wsgi:
     app: run.app
-    packRequirements: false
+    packRequirements: true
     pythonBin: python3.7
+  customDomain:
+    stage: staging
+    createRoute53Record: true
+    endpointType: edge
+    certificateName: '7okyo.com'
+    domainName: 'staging-tinyurl.7okyo.com'
+    basePath: ''
 
 package:
   individually: true
@@ -16,8 +27,8 @@ package:
 provider:
   name: aws
   runtime: python3.7
-  stage: development
-  region: us-east-1
+  stage: staging
+  region: ca-central-1
   profile: default
   environment:
     REDIS_HOST:

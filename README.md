@@ -7,12 +7,15 @@ A tinyurl clone service
 - [todo] Doc strings
 - [done] Test environment
 - [done] Deployment environment
+- [done] Staging environment
 - [todo] Production environment (AWS Lambda, AWS ElastiCache: Redis)
 - [todo] Continuous Integration (Circle CI or Travis CI)
 - [todo] Internationalization (i18n)
 - [todo] Test app error handlers
 - [todo] Integration tests: local redis server and read-only
 - [todo] Rename serverless function in template
+- [todo] Solve lambda cold starts
+- [todo] Solve duplicate logs in CloudWatch Logs
 
 ## References
 - https://stackoverflow.com/questions/742013/how-do-i-create-a-url-shortener
@@ -25,6 +28,8 @@ A tinyurl clone service
 - https://flask.palletsprojects.com/en/1.1.x/appcontext/
 - https://flask.palletsprojects.com/en/1.1.x/logging/
 - https://flask.palletsprojects.com/en/1.1.x/testing/
+- https://serverless.com/blog/serverless-api-gateway-domain/
+- https://serverless-stack.com/chapters/stages-in-serverless-framework.html
 
 ## Technique
 
@@ -126,3 +131,9 @@ curl \
 |`sh bin/run.sh`|Run locally|
 |`sh bin/deploy.sh`|Deploy to cloud|
 |`sh bin/logs.sh`|Get logs from cloud|
+
+# Troubleshooting
+
+---
+```Serverless: Recoverable error occurred (Inaccessible host: `*.s3.amazonaws.com'. This service may not be available in the `us-east-1' region.), sleeping for 5 seconds. Try 4 of 4```
+- AWS DNS is unable to resolve the S3 path for the deploy. To continue developing, try switching the `--region`.
