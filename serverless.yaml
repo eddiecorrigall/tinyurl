@@ -10,6 +10,8 @@ plugins:
 custom:
   myDomain: '7okyo.com'
   myStage: ${opt:stage, 'staging'}  # Defaults to staging
+  myRegion: ${opt:region, 'us-east-1'}  # Defaults to us-east-1
+  myProfile: ${opt:profile, 'default'}  # Defaults to default
   mySubdomain:  # Dictionary where keys are stage name and values are subdomains
     staging: 'staging-tinyurl'
     production: 'tinyurl'
@@ -25,7 +27,7 @@ custom:
     createRoute53Record: true
     endpointType: edge
     certificateName: ${self:custom.myDomain}
-    domainName: ${self:custom.mySubdomain.${self:custom.myStage}}.${self:custom.myDomain}  # ie. 'tinyurl-staging.7okyo.com'
+    domainName: ${self:custom.mySubdomain.${self:custom.myStage}}.${self:custom.myDomain}  # ie. 'staging-tinyurl.7okyo.com'
     basePath: ''
 
 package:
@@ -35,9 +37,10 @@ provider:
   name: aws
   runtime: python3.7
   stage: ${self:custom.myStage}
-  region: ${opt:region, 'ca-central-1'}
-  profile: ${env:AWS_PROFILE, 'default'}
+  region: ${self:custom.myRegion}
+  profile: ${self:custom.myProfile}
   environment:
+    TINYURL_SECRET_KEY: ${env:TINYURL_SECRET_KEY}
     REDIS_HOST:
       "Fn::GetAtt": [ServerlessRedisCluster, PrimaryEndPoint.Address]
     REDIS_PORT:

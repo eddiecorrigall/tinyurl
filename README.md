@@ -17,6 +17,7 @@ A tinyurl clone service
 - [todo] Rename serverless function in template
 - [todo] Solve lambda cold starts
 - [todo] Solve duplicate logs in CloudWatch Logs
+- [todo] Choose at least 2 subnets for Lambda to run your functions in high availability mode
 
 ## References
 - https://stackoverflow.com/questions/742013/how-do-i-create-a-url-shortener
@@ -32,6 +33,7 @@ A tinyurl clone service
 - https://serverless.com/blog/serverless-api-gateway-domain/
 - https://serverless-stack.com/chapters/stages-in-serverless-framework.html
 - https://serverless.com/framework/docs/dashboard/testing/
+- https://serverless-stack.com/chapters/load-secrets-from-env.html
 
 ## Technique
 
@@ -139,3 +141,7 @@ curl \
 ---
 ```Serverless: Recoverable error occurred (Inaccessible host: `*.s3.amazonaws.com'. This service may not be available in the `us-east-1' region.), sleeping for 5 seconds. Try 4 of 4```
 - AWS DNS is unable to resolve the S3 path for the deploy. To continue developing, try switching the `--region`.
+
+---
+```ServerlessError: No existing streams for the function```
+- Lambda log collection is not supported in ca-central-1

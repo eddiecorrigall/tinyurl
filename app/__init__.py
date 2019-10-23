@@ -10,10 +10,7 @@ import core.tinyurl
 def create_app(testing=False):
     app = Flask(__name__)
     app.config['TESTING'] = testing
-    app.config['SECRET_KEY'] = (
-        os.getenv('SECRET_KEY', 'superman'))
-    app.config['WTF_CSRF_SECRET_KEY'] = (
-        os.getenv('WTF_CSRF_SECRET_KEY', 'batman'))
+    app.config['SECRET_KEY'] = os.environ['TINYURL_SECRET_KEY']
 
     core.logger.init_app(app)
     core.redis.init_app(app)
