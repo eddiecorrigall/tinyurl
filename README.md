@@ -134,8 +134,10 @@ The pytest and serverless arguments are passed into the CLI tools. For example, 
 
 ---
 **AWS DNS is unable to resolve the S3 path for the deploy. To continue developing, try switching the `--region`.**
+
 ```Serverless: Recoverable error occurred (Inaccessible host: `*.s3.amazonaws.com'. This service may not be available in the `us-east-1' region.), sleeping for 5 seconds. Try 4 of 4```
 
 ---
 **Lambda log collection is not supported in ca-central-1.**
+
 ```ServerlessError: No existing streams for the function```
