@@ -3,6 +3,7 @@ import logging
 
 from abc import ABC, abstractmethod
 
+from core.common import sleep_jitter
 from core.parsers import BASE62, encode
 from services.exceptions import ServiceException
 
@@ -86,7 +87,8 @@ class TinyURLServiceRedis(TinyURLService):
                         'An asynchronous event modified the watched name '
                         '{name} before it could be modified.'.format(
                             name=self.REDIS_NAME_SHORT))
-                    continue
+                    # Add jitter for each loop to spread out async attempts
+                    sleep_jitter(5, 50)
         raise TinyURLServiceException('Failed to get or create id for long')
 
     def get_long_url(self, short_id):
