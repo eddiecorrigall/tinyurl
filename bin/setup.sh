@@ -3,11 +3,9 @@
 set -e
 
 # Bootstrap project
-
 if [ -z "$(command -v node)" ]; then
     brew install node
 fi
-
 if [ -z "$(command -v serverless)" ]; then
     npm install -g serverless
 fi
@@ -27,3 +25,5 @@ pip3 install --requirement requirements.txt
 # brew upgrade redis
 # brew services start redis
 
+# Make bin folder shell files executable
+chmod -R +x ./bin/*.sh
