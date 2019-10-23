@@ -1,14 +1,10 @@
+{% import "bootstrap/wtf.html" as wtf %}
 {% extends "base.html" %}
 
-{% block content %}
-    <h1>Make TinyURL</h1>
-    <form action="" method="post" novalidate="">
-        {{ form.hidden_tag() }}
-        {{ form.url.label }}<br />
-        {{ form.url(size=32) }}
-        {{ form.submit() }}<br />
-        {% for error in form.url.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </form>
+{% block title %}
+Make TinyURL
+{% endblock %}
+
+{% block body %}
+{{ wtf.quick_form(form) }}
 {% endblock %}

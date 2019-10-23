@@ -1,31 +1,42 @@
 {% extends "base.html" %}
 
-{% block content %}
-    <h1>Get TinyURL</h1>
-    <ul>
-        <li>
-            <b>Short ID: </b>
-            {% if short_id %}
-            {{ short_id }}
-            {% else %}
-            Unknown Short ID
-            {% endif %}
-        </li>
-        <li>
-            <b>Short URL: </b>
-            {% if short_url %}
-            <a href="{{ short_url }}">{{ short_url }}</a>
-            {% else %}
-            Unknown Short URL
-            {% endif %}
-        </li>
-        <li>
-            <b>Long URL: </b>
-            {% if long_url %}
-            <a href="{{ long_url }}">{{ long_url }}</a>
-            {% else %}
-            Unknown Long URL
-            {% endif %}
-        </li>
-    </ul>
+{% block title %}
+Get TinyURL
+{% endblock %}
+
+{% block body %}
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Short ID</th>
+                <td>
+                {% if short_id %}
+                    {{ short_id }}
+                {% else %}
+                    Unknown Short ID
+                {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Short URL</th>
+                <td>
+                {% if short_url %}
+                    <a href="{{ short_url }}">{{ short_url }}</a>
+                {% else %}
+                    Unknown Short URL
+                {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Long URL</th>
+                <td>
+                {% if long_url %}
+                    <a href="{{ long_url }}">{{ long_url }}</a>
+                {% else %}
+                    Unknown Long URL
+                {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
 {% endblock %}
