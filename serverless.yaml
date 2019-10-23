@@ -1,0 +1,183 @@
+org: eddiecorrigall
+app: sls-tinyurl-app
+service: sls-tinyurl
+
+plugins:
+  - serverless-python-requirements
+  - serverless-wsgi
+  - serverless-domain-manager
+
+custom:
+  myDomain: '7okyo.com'
+  myStage: ${opt:stage, 'staging'}  # Defaults to staging
+  myRegion: ${opt:region, 'us-east-1'}  # Defaults to us-east-1
+  myProfile: ${opt:profile, 'default'}  # Defaults to default
+  mySubdomain:  # Dictionary where keys are stage name and values are subdomains
+    staging: 'tinyurl-staging'
+    production: 'tinyurl'
+  pythonRequirements:
+    fileName: requirements.txt
+    zip: true
+  wsgi:
+    app: run.app
+    packRequirements: true
+    pythonBin: python3.7
+  customDomain:
+    stage: ${self:custom.myStage}
+    createRoute53Record: true
+    endpointType: edge
+    certificateName: ${self:custom.myDomain}
+    domainName: ${self:custom.mySubdomain.${self:custom.myStage}}.${self:custom.myDomain}  # ie. 'tinyurl-staging.7okyo.com'
+    basePath: ''
+
+package:
+  individually: true
+
+provider:
+  name: aws
+  runtime: python3.7
+  stage: ${self:custom.myStage}
+  region: ${self:custom.myRegion}
+  profile: ${self:custom.myProfile}
+  environment:
+    TINYURL_SECRET_KEY: ${env:TINYURL_SECRET_KEY}
+    REDIS_HOST:
+      "Fn::GetAtt": [ServerlessRedisCluster, PrimaryEndPoint.Address]
+    REDIS_PORT:
+      "Fn::GetAtt": [ServerlessRedisCluster, PrimaryEndPoint.Port]
+    REDIS_DB: '0'
+  vpc:
+    securityGroupIds:
+      - "Fn::GetAtt": ServerlessLambdaSecurityGroup.GroupId
+    subnetIds:
+      - Ref: ServerlessPrivateSubnet
+
+functions:
+  app:
+    handler: wsgi_handler.handler
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'
+
+resources:
+  Resources:
+    ServerlessVPC:
+      Type: AWS::EC2::VPC
+      Properties:
+        CidrBlock: "10.0.0.0/16"
+    ServerlessElasticIp:
+      Type: AWS::EC2::EIP
+      Properties:
+        Domain: vpc
+    ServerlessInternetGateway:
+      Type: AWS::EC2::InternetGateway
+    ServerlessVPCGatewayAttachment:
+      Type: AWS::EC2::VPCGatewayAttachment
+      Properties:
+        VpcId:
+          Ref: ServerlessVPC
+        InternetGatewayId:
+          Ref: ServerlessInternetGateway
+#    ServerlessNatGateway:
+#      Type: AWS::EC2::NatGateway
+#      Properties:
+#        AllocationId:
+#          "Fn::GetAtt": ServerlessElasticIp.AllocationId
+#        SubnetId:
+#          Ref: ServerlessPublicSubnet
+    ServerlessPrivateSubnet:
+      DependsOn: ServerlessVPC
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId:
+          Ref: ServerlessVPC
+        AvailabilityZone: ${self:provider.region}a
+        CidrBlock: "10.0.1.0/24"
+    ServerlessPublicSubnet:
+      DependsOn: ServerlessVPC
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId:
+          Ref: ServerlessVPC
+        AvailabilityZone: ${self:provider.region}a
+        CidrBlock: "10.0.2.0/24"
+    ServerlessPrivateRouteTable:
+      Type: AWS::EC2::RouteTable
+      Properties:
+        VpcId:
+          Ref: ServerlessVPC
+#    ServerlessPrivateRoute:
+#      Type: AWS::EC2::Route
+#      Properties:
+#        RouteTableId:
+#          Ref: ServerlessPrivateRouteTable
+#        DestinationCidrBlock: 0.0.0.0/0  # TODO: Only public cidr range
+#        NatGatewayId:
+#          Ref: ServerlessNatGateway
+    ServerlessPublicRouteTable:
+      Type: AWS::EC2::RouteTable
+      Properties:
+        VpcId:
+          Ref: ServerlessVPC
+    ServerlessPublicRoute:
+      Type: AWS::EC2::Route
+      Properties:
+        DestinationCidrBlock: 0.0.0.0/0  # TODO: Only private cidr range
+        GatewayId:
+          Ref: ServerlessInternetGateway
+        RouteTableId:
+          Ref: ServerlessPublicRouteTable
+    ServerlessPrivateSubnetRouteTableAssociation:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId:
+          Ref: ServerlessPrivateSubnet
+        RouteTableId:
+          Ref: ServerlessPrivateRouteTable
+    ServerlessPublicSubnetRouteTableAssociation:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId:
+          Ref: ServerlessPublicSubnet
+        RouteTableId:
+          Ref: ServerlessPublicRouteTable
+    ServerlessLambdaSecurityGroup:
+      DependsOn: ServerlessVPC
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: SecurityGroup for Lambda functions
+        VpcId:
+          Ref: ServerlessVPC
+    ServerlessRedisSecurityGroup:
+      DependsOn: ServerlessVPC
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: Ingress for Redis cluster
+        VpcId:
+          Ref: ServerlessVPC
+        SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 6379
+          ToPort: 6379
+          SourceSecurityGroupId:
+            Ref: ServerlessLambdaSecurityGroup
+    ServerlessElastiCacheSubnetGroup:
+      Type: AWS::ElastiCache::SubnetGroup
+      Properties:
+        Description: "Cache Subnet Group"
+        SubnetIds:
+        - Ref: ServerlessPrivateSubnet
+    ServerlessRedisCluster:
+      Type: AWS::ElastiCache::ReplicationGroup
+      Properties:
+        AutomaticFailoverEnabled: true
+        AutoMinorVersionUpgrade: true
+        CacheNodeType: cache.t2.micro
+        CacheSubnetGroupName:
+          Ref: ServerlessElastiCacheSubnetGroup
+        Engine: redis
+        NumCacheClusters: 2
+        Port: 6379
+        ReplicationGroupDescription: Redis cluster with failover configured
+        SecurityGroupIds:
+        - "Fn::GetAtt": ServerlessRedisSecurityGroup.GroupId
