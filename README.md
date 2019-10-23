@@ -6,7 +6,6 @@ A tinyurl clone service
 - [done] Deployment environment
 - [done] Staging environment
 - [done] Production environment (AWS Lambda, AWS ElastiCache: Redis)
-
 - [todo] App configuration
 - [todo] Python linter
 - [todo] Doc strings
@@ -73,34 +72,24 @@ DynamoDB is not suitable since the partition key, which uniquely identifies the 
 #### ElastiCache: Redis
 Redis supports HSET and HGET which does not suffer from hot partitions and will consistently perform at O(1) time complexity.
 
-### Service
-
-#### Lambda
-- Pro: pay per usage
-- Pro: light-weight infrastructure
-- Pro: scalable
-
-## Setup Project
+## Quick Start
 ```bash
 # Setup project
-sh bin/setup.sh
-
-# Run all tests
-sh bin/tests.sh
+./bin/setup.sh
 
 # Run locally
-serverless wsgi serve
+./bin/local.sh
 ```
 
 ## Example
 
 ### Set Endpoint
 ```bash
-# Local development: `serverless wsgi serve`
+# Local development: `./bin/local.sh`
 export TINYURL_ENDPOINT=http://localhost:5000
 
-# OR, deployed: `serverless deploy`
-export TINYURL_ENDPOINT=https://xg8hjfwp7d.execute-api.us-east-1.amazonaws.com/development
+# OR, in the cloud: `./bin/provision.sh --stage staging`
+export TINYURL_ENDPOINT=https://tinyurl-staging.7okyo.com
 ```
 
 ### Make TinyURL
@@ -128,20 +117,27 @@ curl \
 
 ## Commands
 
-|Command|Description|
-|---|---|
-|`sh bin/setup.sh`|Setup project|
-|`sh bin/test.sh`|Run tests|
-|`sh bin/run.sh`|Run locally|
-|`sh bin/deploy.sh`|Deploy to cloud|
-|`sh bin/logs.sh`|Get logs from cloud|
+|Command|Wrapper for|Description|
+|---|---|---|
+|`./bin/setup.sh`|N/A|Setup project|
+|`./bin/test.sh`|pytest|Run tests|
+|`./bin/local.sh`|serverless wsgi|Run locally|
+|`./bin/provision.sh`|serverless deploy|Provision cloud|
+|`./bin/deprovision.sh`|serverless remove|De-provision cloud|
+|`./bin/logs.sh`|serverless logs|Get logs from cloud|
+
+### Arguments
+
+The pytest and serverless arguments are passed into the CLI tools. For example, to deploy to production use the `--stage production` argument to the `./bin/provision.sh` script.
 
 # Troubleshooting
 
 ---
+**AWS DNS is unable to resolve the S3 path for the deploy. To continue developing, try switching the `--region`.**
+
 ```Serverless: Recoverable error occurred (Inaccessible host: `*.s3.amazonaws.com'. This service may not be available in the `us-east-1' region.), sleeping for 5 seconds. Try 4 of 4```
-- AWS DNS is unable to resolve the S3 path for the deploy. To continue developing, try switching the `--region`.
 
 ---
+**Lambda log collection is not supported in ca-central-1.**
+
 ```ServerlessError: No existing streams for the function```
-- Lambda log collection is not supported in ca-central-1

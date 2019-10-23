@@ -14,7 +14,7 @@ def make_form():
     return render_template('tinyurl/make.html', form=form)
 
 
-@blueprint.route('/tinyurl', methods=['GET'])
+@blueprint.route('/api', methods=['GET'])
 def get_short():
     # Sanitize user input
     long_url = request.args.get('url')
@@ -36,7 +36,7 @@ def get_short():
             return short_url, 200
 
 
-@blueprint.route('/tinyurl', methods=['POST'])
+@blueprint.route('/api', methods=['POST'])
 def make_short():
     # Sanitize user input
     if not request.is_json:
