@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+from flask_bootstrap import Bootstrap
 
 import core.logger
 import core.redis
@@ -15,6 +16,8 @@ def create_app(testing=False):
     core.logger.init_app(app)
     core.redis.init_app(app)
     core.tinyurl.init_app(app)
+
+    Bootstrap(app)
 
     from app.errors import blueprint as errors_blueprint
     app.register_blueprint(errors_blueprint)

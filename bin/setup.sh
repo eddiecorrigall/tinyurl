@@ -13,6 +13,11 @@ fi
 # Install node requirements
 npm install
 
+# sudo apt install python3-venv
+# sudo apt install python3-widgetsnbextension
+# sudo apt install python3-testresources
+# pip install --upgrade --force setuptools --user
+
 # Install python requirements
 python3.7 -m venv venv
 . venv/bin/activate

@@ -1,20 +1,57 @@
+{% import "bootstrap/utils.html" as utils %}
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>TinyURL Mock</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  </head>
-  <body>
-    {% block content %}{% endblock %}
-    <hr />
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <ul>
-        {% for message in messages %}
-        <li>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    {% endwith %}
-  </body>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>TinyURL Clone | 7okyo.com</title>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="content-section">{% include 'menu.html' with context %}</div>
+            <div class="intro-header">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="intro-message">
+                                <h1>{% block title %}{% endblock %}</h1>
+                                <p><i>Implementation of the classic system design interview question.</i></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="content-section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {{ utils.flashed_messages() }}
+                            {% block body %}{% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <ul class="list-inline">
+                            <li><a href="{{ url_for('tinyurl.make_form') }}">Home</a></li>
+                            <li class="footer-menu-divider">⋅</li>
+                            <li><a href="https://github.com/eddiecorrigall/tinyurl">Source Code</a></li>
+                            <li class="footer-menu-divider">⋅</li>
+                            <li><a href="https://github.com/eddiecorrigall">GitHub</a></li>
+                            <li class="footer-menu-divider">⋅</li>
+                            <li><a href="https://linkedin.com/in/eddiecorrigall">LinkedIn</a></li>
+                        </ul>
+                        <p class="copyright text-muted small">Copyright &copy; 2019. All Rights Reserved</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </body>
 </html>

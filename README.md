@@ -6,6 +6,7 @@ A tinyurl clone service
 - [done] Deployment environment
 - [done] Staging environment
 - [done] Production environment (AWS Lambda, AWS ElastiCache: Redis)
+- [done] Bootstrap frontend
 - [todo] App configuration
 - [todo] Python linter
 - [todo] Doc strings
