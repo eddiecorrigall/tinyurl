@@ -6,8 +6,8 @@ set -e
 
 export PYTHONPATH
 PYTHONPATH="$(pwd)"
-export FLASK_CONFIG='testing'
-export FLASK_DEBUG=1
 
 TINYURL_SECRET_KEY='superman' \
+FLASK_CONFIG='testing' \
+FLASK_DEBUG=1 \
 	pytest "$@" tests/

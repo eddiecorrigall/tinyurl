@@ -8,4 +8,5 @@ set -e
 sh bin/test.sh
 
 # Run locally
-serverless wsgi serve
+FLASK_DEBUG=1 \
+    serverless wsgi serve
