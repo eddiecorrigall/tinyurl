@@ -1,3 +1,5 @@
+org: eddiecorrigall
+app: sls-tinyurl-app
 service: sls-tinyurl
 
 plugins:
@@ -6,6 +8,11 @@ plugins:
   - serverless-domain-manager
 
 custom:
+  myDomain: '7okyo.com'
+  myStage: ${opt:stage, 'staging'}  # Defaults to staging
+  mySubdomain:  # Dictionary where keys are stage name and values are subdomains
+    staging: 'staging-tinyurl'
+    production: 'tinyurl'
   pythonRequirements:
     fileName: requirements.txt
     zip: true
@@ -14,11 +21,11 @@ custom:
     packRequirements: true
     pythonBin: python3.7
   customDomain:
-    stage: staging
+    stage: ${self:custom.myStage}
     createRoute53Record: true
     endpointType: edge
-    certificateName: '7okyo.com'
-    domainName: 'staging-tinyurl.7okyo.com'
+    certificateName: ${self:custom.myDomain}
+    domainName: ${self:custom.mySubdomain.${self:custom.myStage}}.${self:custom.myDomain}  # ie. 'tinyurl-staging.7okyo.com'
     basePath: ''
 
 package:
@@ -27,9 +34,9 @@ package:
 provider:
   name: aws
   runtime: python3.7
-  stage: staging
-  region: ca-central-1
-  profile: default
+  stage: ${self:custom.myStage}
+  region: ${opt:region, 'ca-central-1'}
+  profile: ${env:AWS_PROFILE, 'default'}
   environment:
     REDIS_HOST:
       "Fn::GetAtt": [ServerlessRedisCluster, PrimaryEndPoint.Address]
