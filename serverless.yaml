@@ -13,7 +13,7 @@ custom:
   myRegion: ${opt:region, 'us-east-1'}  # Defaults to us-east-1
   myProfile: ${opt:profile, 'default'}  # Defaults to default
   mySubdomain:  # Dictionary where keys are stage name and values are subdomains
-    staging: 'staging-tinyurl'
+    staging: 'tinyurl-staging'
     production: 'tinyurl'
   pythonRequirements:
     fileName: requirements.txt
@@ -27,7 +27,7 @@ custom:
     createRoute53Record: true
     endpointType: edge
     certificateName: ${self:custom.myDomain}
-    domainName: ${self:custom.mySubdomain.${self:custom.myStage}}.${self:custom.myDomain}  # ie. 'staging-tinyurl.7okyo.com'
+    domainName: ${self:custom.mySubdomain.${self:custom.myStage}}.${self:custom.myDomain}  # ie. 'tinyurl-staging.7okyo.com'
     basePath: ''
 
 package:
