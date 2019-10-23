@@ -1,7 +1,7 @@
 import pytest
 
 from core.parsers import BASE62, encode, decode
-from core.parsers import URL, is_url, parse_url
+from core.parsers import URL, is_url, in_alphabet, parse_url
 
 
 class TestParsersBaseConversion(object):
@@ -52,6 +52,29 @@ class TestParsersBaseConversion(object):
     def test_decode(self, alphabet, string, result, raises_exception):
         def test():
             assert decode(string, alphabet) == result
+
+        if raises_exception:
+            with pytest.raises(raises_exception):
+                test()
+        else:
+            test()
+
+    @pytest.mark.parametrize(
+        ['alphabet', 'string', 'result', 'raises_exception'],
+        [
+            (666, '1', 'invalid alphabet', TypeError),
+            (['a', 'b', 'c'], 'a', True, None),
+            ('abc', 'a', True, None),
+            ('abc', 'aa', True, None),
+            ('abc', 'abbc', True, None),
+            ('abc', '1', False, None),
+            ('abc', '', True, None),
+            ('abc', 'abcd', False, None),
+        ]
+    )
+    def test_in_alphabet(self, alphabet, string, result, raises_exception):
+        def test():
+            assert in_alphabet(string, alphabet) == result
 
         if raises_exception:
             with pytest.raises(raises_exception):

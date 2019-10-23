@@ -78,7 +78,7 @@ class TinyURLServiceRedis(TinyURLService):
         current_short_id = self.get_redis_client().hget(
             name=self.REDIS_NAME_SHORT, key=long_url)
         if current_short_id is not None:
-            return current_short_id.decode()  # Return as string
+            return current_short_id.decode()  # Return as str
 
     def get_or_create_short_id(self, long_url):
         """Given a long url, assign and return a non-negative integer encoded
@@ -126,8 +126,10 @@ class TinyURLServiceRedis(TinyURLService):
         raise TinyURLServiceException('Failed to get or create id for long')
 
     def get_long_url(self, short_id):
-        return self.get_redis_client().hget(
+        long_url = self.get_redis_client().hget(
             name=self.REDIS_NAME_LONG, key=short_id)
+        if long_url is not None:
+            return long_url.decode()  # Return as str
 
     def update_long_url(self, short_id, long_url):
         if self.get_redis_client().hsetnx(

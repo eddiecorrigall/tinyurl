@@ -31,7 +31,7 @@ class TestIntegrationTinyURLAPI(object):
                     location = response.headers.get('Location')
                     assert location is not None
                     assert location.endswith(url_for(
-                        'tinyurl.get_short', url=long_url))
+                        'tinyurl.get_info', url=long_url))
                 if body_substring is not None:
                     body = response.data.decode()
                     assert body_substring in body
@@ -59,23 +59,28 @@ class TestIntegrationTinyURLAPI(object):
                 assert 'Failed to decode JSON object' in body
 
     @pytest.mark.parametrize(
-        ['long_url', 'status_code'],
+        ['long_url', 'short_id', 'status_code'],
         [
-            ('https://en.wikipedia.org/wiki/TinyURL', 200),
-            ('https://www.google.ca/maps', 200),
-            ('http://example.com', 404),
-            ('', 400),
-            ('invalid url', 400),
-            ('http://localhost.localdomain:5000', 400),
+            ('https://en.wikipedia.org/wiki/TinyURL', None, 200),
+            ('https://www.google.ca/maps', None, 200),
+            ('http://example.com', None, 404),
+            ('', None, 400),
+            ('invalid url', None, 400),
+            ('http://localhost.localdomain:5000', None, 400),
+            ('https://en.wikipedia.org/wiki/TinyURL', 'a', 400),
+            (None, '', 400),  # Invalid and empty
+            (None, 'a', 200),  # Valid and found
+            (None, 'Qwerty', 404),  # Valid but not found
+            (None, 'Qwerty!@#', 400),  # Invalid base 62
         ]
     )
-    def test_get_short(
+    def test_get_info(
             self, app,
-            long_url, status_code):
+            long_url, short_id, status_code):
         with app.app_context():
             with app.test_client() as client:
                 response = client.get(
-                    url_for('tinyurl.get_short', url=long_url))
+                    url_for('tinyurl.get_info', url=long_url, id=short_id))
                 assert response.status_code == status_code
 
     @pytest.mark.parametrize(

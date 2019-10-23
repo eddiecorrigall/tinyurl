@@ -4,9 +4,8 @@
             <a class="navbar-brand" href="{{ url_for('tinyurl.make_form') }}">TinyURL Clone</a>
         </div>
         <ul class="nav navbar-nav navbar-right">
-        	<li><a href="http://github.com/eddiecorrigall/tinyurl"><span class="glyphicon glyphicon-cloud-download"></span> Source Code</a></li>
-            <li><a href="http://github.com/eddiecorrigall"><span class="glyphicon glyphicon-star"></span> Github</a></li>
-            <li><a href="https://linkedin.com/in/eddiecorrigall"><span class="glyphicon glyphicon-user"></span> LinkedIn</a></li>
+            <li><a href="{{ url_for('tinyurl.make_form') }}"><span class="glyphicon glyphicon-pencil"></span> Make</a></li>
+            <li><a href="{{ url_for('tinyurl.search_form') }}"><span class="glyphicon glyphicon-search"></span> Search</a></li>
         </ul>
     </div>
 </nav>

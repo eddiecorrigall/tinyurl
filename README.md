@@ -13,6 +13,7 @@ A tinyurl clone service
 - [todo] Continuous Integration (Circle CI or Travis CI)
 - [todo] Internationalization (i18n)
 - [todo] Test app error handlers
+- [todo] Test service return types since Redis tends to return in binary strings
 - [todo] Integration tests: local redis server and read-only
 - [todo] Solve lambda cold starts
 - [todo] Solve duplicate logs in CloudWatch Logs

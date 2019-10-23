@@ -1,6 +1,10 @@
 BASE62 = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 
 
+def in_alphabet(string, alphabet):
+    return not (set(string) - set(alphabet))
+
+
 def encode(number, alphabet):
     """Encode a non-negative integer number into a string using alphabet.
 

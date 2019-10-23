@@ -1,8 +1,8 @@
-from flask import g, current_app, redirect, render_template, request
+from flask import g, current_app, redirect, render_template, request, url_for
 from werkzeug.exceptions import BadRequest, NotFound
 
 from app.tinyurl import common, blueprint
-from app.tinyurl.forms import MakeForm
+from app.tinyurl.forms import MakeForm, SearchForm
 
 
 @blueprint.route('/', methods=['GET', 'POST'])
@@ -14,10 +14,35 @@ def make_form():
     return render_template('tinyurl/make.html', form=form)
 
 
+@blueprint.route('/search', methods=['GET', 'POST'])
+def search_form():
+    form = SearchForm()
+    short_id = request.form.get('short_id') or None
+    long_url = request.form.get('long_url') or None
+    if form.validate_on_submit():
+        get_info_endpoint = url_for(
+            'tinyurl.get_info', url=long_url, id=short_id, html=True)
+        return redirect(get_info_endpoint, code=303)
+    return render_template('tinyurl/search.html', form=form)
+
+
 @blueprint.route('/api', methods=['GET'])
-def get_short():
+def get_info():
+    is_html = request.args.get('html', False)
+    if 'url' in request.args and 'id' not in request.args:
+        current_app.logger.debug('Found long url in request args')
+        long_url = request.args.get('url')
+        return _get_info_from_long_url(long_url=long_url, is_html=is_html)
+    elif 'url' not in request.args and 'id' in request.args:
+        short_id = request.args.get('id')
+        return _get_info_from_short_id(short_id=short_id, is_html=is_html)
+    else:
+        raise BadRequest(
+            'Only one of url or id parameters can be set in the query')
+
+
+def _get_info_from_long_url(long_url, is_html):
     # Sanitize user input
-    long_url = request.args.get('url')
     current_app.logger.info('Request to GET shorten url {long_url}'.format(
         long_url=(long_url or 'empty')))
     common.validate_long_url(long_url)
@@ -27,13 +52,31 @@ def get_short():
         raise NotFound('TinyURL does not exist')
     else:
         short_url = common.get_short_url_from_short_id(short_id)
-        is_html = request.args.get('html', False)
         if is_html:
             return render_template(
                 'tinyurl/get.html',
                 long_url=long_url, short_id=short_id, short_url=short_url)
         else:
             return short_url, 200
+
+
+def _get_info_from_short_id(short_id, is_html):
+    # Sanitize user input
+    current_app.logger.info('Request to GET long url from {short_id}'.format(
+        short_id=(short_id or 'empty')))
+    common.validate_short_id(short_id)
+    # Determine long url
+    long_url = g.tinyurl.get_long_url(short_id)
+    if long_url is None:
+        raise NotFound('TinyURL does not exist')
+    else:
+        short_url = common.get_short_url_from_short_id(short_id)
+        if is_html:
+            return render_template(
+                'tinyurl/get.html',
+                long_url=long_url, short_id=short_id, short_url=short_url)
+        else:
+            return long_url, 200
 
 
 @blueprint.route('/api', methods=['POST'])

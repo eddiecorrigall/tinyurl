@@ -3,7 +3,7 @@ from urllib.parse import urljoin
 from flask import current_app, g, url_for, redirect, request
 from werkzeug.exceptions import BadRequest, InternalServerError
 
-from core.parsers import parse_url
+from core.parsers import BASE62, in_alphabet, parse_url
 
 
 def validate_long_url(long_url):
@@ -22,6 +22,15 @@ def validate_long_url(long_url):
     if url_obj.hostname == app_url_obj.hostname:
         if url_obj.port == app_url_obj.port:
             raise BadRequest('Request url is self-referencing')
+
+
+def validate_short_id(short_id):
+    # Sanitize user input
+    if not short_id:
+        raise BadRequest('Request id is empty or not defined')
+    # Check if characters are base-62
+    if not in_alphabet(short_id, BASE62):
+        raise BadRequest('Request id contains invalid characters')
 
 
 def get_short_url_from_short_id(short_id):
@@ -47,7 +56,7 @@ def make_short(long_url, is_html=None):
             long_url=long_url, short_id=short_id))
     # Update entry only if necessary
     get_short_endpoint = url_for(
-        'tinyurl.get_short', url=long_url, html=is_html)
+        'tinyurl.get_info', url=long_url, html=is_html)
     if g.tinyurl.update_long_url(short_id, long_url):
         current_app.logger.info(
             'Saved url {long_url} as shortened string {short_id}'.format(
