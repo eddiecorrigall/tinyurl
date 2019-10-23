@@ -14,10 +14,10 @@ A tinyurl clone service
 - [todo] Internationalization (i18n)
 - [todo] Test app error handlers
 - [todo] Integration tests: local redis server and read-only
-- [todo] Rename serverless function in template
 - [todo] Solve lambda cold starts
 - [todo] Solve duplicate logs in CloudWatch Logs
 - [todo] Choose at least 2 subnets for Lambda to run your functions in high availability mode
+- [todo] Automatically generate api docs
 
 ## References
 - https://stackoverflow.com/questions/742013/how-do-i-create-a-url-shortener
