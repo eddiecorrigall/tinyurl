@@ -2,13 +2,14 @@
 A tinyurl clone service
 
 ## Features
-- [todo] App configuration
-- [todo] Python linter
-- [todo] Doc strings
 - [done] Test environment
 - [done] Deployment environment
 - [done] Staging environment
-- [todo] Production environment (AWS Lambda, AWS ElastiCache: Redis)
+- [done] Production environment (AWS Lambda, AWS ElastiCache: Redis)
+
+- [todo] App configuration
+- [todo] Python linter
+- [todo] Doc strings
 - [todo] Continuous Integration (Circle CI or Travis CI)
 - [todo] Internationalization (i18n)
 - [todo] Test app error handlers
@@ -30,6 +31,7 @@ A tinyurl clone service
 - https://flask.palletsprojects.com/en/1.1.x/testing/
 - https://serverless.com/blog/serverless-api-gateway-domain/
 - https://serverless-stack.com/chapters/stages-in-serverless-framework.html
+- https://serverless.com/framework/docs/dashboard/testing/
 
 ## Technique
 
