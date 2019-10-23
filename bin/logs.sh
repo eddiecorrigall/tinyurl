@@ -3,4 +3,4 @@
 set -e
 
 # Get logs
-serverless logs "$@"
+serverless logs --function app "$@"
