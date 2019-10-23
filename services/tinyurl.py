@@ -16,18 +16,49 @@ class TinyURLServiceException(ServiceException):
 class TinyURLService(ABC):
     @abstractmethod
     def get_short_id(self, long_url):
+        """Get a short id associated with the long url.
+
+        Returns the short id associated with the long url, or None.
+
+        Arguments:
+        long_url -- A str value used to lookup the short id.
+        """
         pass
 
     @abstractmethod
     def get_or_create_short_id(self, long_url):
+        """Get or create a short id given a long url.
+
+        Return a short id str that has historically been associated with the
+        long url, or create a new mapping to the long url and return the new
+        short id.
+
+        Arguments:
+        long_url -- A str value to be, or already associated with a short id.
+        """
         pass
 
     @abstractmethod
     def get_long_url(self, short_id):
+        """Get long url given a short id.
+
+        Return a long url str associated with the short id, otherwise None.
+
+        Arguments:
+        short_id -- A str value used to lookup long_url.
+        """
         pass
 
     @abstractmethod
     def update_long_url(self, short_id, long_url):
+        """Update the long url associatd with the short id.
+
+        Return True if the persistence layer was modified, otherwise False.
+
+        Arguments:
+        short_id -- A str value used to lookup long_url
+        long_url -- A str value used to redirect given short_id
+        """
         pass
 
 
@@ -50,12 +81,15 @@ class TinyURLServiceRedis(TinyURLService):
             return current_short_id.decode()  # Return as string
 
     def get_or_create_short_id(self, long_url):
-        """Given an url, assign and return a non-negative integer encoded in base 62.
+        """Given a long url, assign and return a non-negative integer encoded
+        in base 62 as str value.
 
         This is an example of a Bijective function.
 
+        Returns a short id str, or raises a TinyURLServiceException.
+
         Arguments:
-        long_url -- The string to translate.
+        long_url -- A str value to translate into a short id.
         """
         with self.get_redis_client().pipeline() as pipe:
             for attempt in range(1, self.REDIS_MAX_ATTEMPTS + 1):
