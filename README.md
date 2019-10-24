@@ -3,7 +3,7 @@
 A tinyurl clone service. A classic system design interview question:
 > How would you design [TinyURL](https://en.wikipedia.org/wiki/TinyURL)?
 
-Visit [demo](tinyurl.7okyo.com) to see the project in action.
+Visit [demo](hhtps://tinyurl.7okyo.com) to see the project in action.
 
 ## Quick Start
 Clone the project and run it locally.
