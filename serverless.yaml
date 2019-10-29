@@ -8,7 +8,7 @@ plugins:
   - serverless-domain-manager
 
 custom:
-  myDomain: '7okyo.com'
+  myDomain: ${env:TINYURL_DOMAIN} # ie. '7okyo.com'
   myStage: ${opt:stage, 'staging'}  # Defaults to staging
   myRegion: ${opt:region, 'us-east-1'}  # Defaults to us-east-1
   myProfile: ${opt:profile, 'default'}  # Defaults to default
