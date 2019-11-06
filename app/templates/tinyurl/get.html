@@ -37,6 +37,28 @@ Get TinyURL
                 {% endif %}
                 </td>
             </tr>
+            <tr>
+                <th>QR Code</th>
+                <td>
+                {% if short_url %}
+                    <!-- https://developers.google.com/chart/infographics/docs/qr_codes -->
+                    <div id="qr"></div>
+                    <script>
+                        var short_url = "{{ short_url | safe }}";
+                        var qrURL = new URL('https://chart.googleapis.com/chart');
+                        qrURL.searchParams.set('cht', 'qr');
+                        qrURL.searchParams.set('chs', '100x100');
+                        qrURL.searchParams.set('choe', 'UTF-8');
+                        qrURL.searchParams.set('chl', short_url);
+                        document.addEventListener('DOMContentLoaded', function() {
+                            var qrImg = document.createElement('img');
+                            qrImg.src = qrURL;
+                            var qrDiv = document.getElementById('qr');
+                            qrDiv.appendChild(qrImg);
+                        });
+                    </script>
+                {% endif %}
+            </tr>
         </tbody>
     </table>
 {% endblock %}
