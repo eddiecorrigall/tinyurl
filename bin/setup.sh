@@ -6,6 +6,10 @@ set -e
 if [ -z "$(command -v node)" ]; then
     brew install node
 fi
+if [ -z "$(command -v redis-cli)" ]; then
+    brew install redis
+    brew services restart redis
+fi
 if [ -z "$(command -v serverless)" ]; then
     npm install -g serverless
 fi
