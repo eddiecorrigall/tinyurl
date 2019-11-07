@@ -82,6 +82,19 @@ class TestIntegrationTinyURLAPI(object):
                 response = client.get(
                     url_for('tinyurl.get_info', url=long_url, id=short_id))
                 assert response.status_code == status_code
+                if status_code == 200:
+                    assert (
+                        'application/json' ==
+                        response.headers.get('Content-Type'))
+                    body = response.data.decode()
+                    assert 'long_url' in body
+                    assert 'short_url' in body
+                    assert 'short_id' in body
+                    assert 'short_qr' in body
+                    if long_url:
+                        assert long_url in body
+                    if short_id:
+                        assert short_id in body
 
     @pytest.mark.parametrize(
         [

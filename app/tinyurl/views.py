@@ -1,4 +1,5 @@
-from flask import g, current_app, redirect, render_template, request, url_for
+from flask import (
+    g, current_app, jsonify, redirect, render_template, request, url_for)
 from werkzeug.exceptions import BadRequest, NotFound
 
 from app.tinyurl import common, blueprint
@@ -61,13 +62,13 @@ def _get_info_from_long_url(long_url, is_html):
     else:
         short_url = common.get_short_url_from_short_id(short_id)
         short_qr = _get_short_qr_from_short_url(short_url)
+        payload = dict(
+            long_url=long_url,
+            short_id=short_id, short_url=short_url, short_qr=short_qr)
         if is_html:
-            return render_template(
-                'tinyurl/get.html',
-                long_url=long_url, short_id=short_id, short_url=short_url,
-                short_qr=short_qr)
+            return render_template('tinyurl/get.html', **payload)
         else:
-            return short_url, 200
+            return jsonify(payload), 200
 
 
 def _get_info_from_short_id(short_id, is_html):
@@ -82,13 +83,13 @@ def _get_info_from_short_id(short_id, is_html):
     else:
         short_url = common.get_short_url_from_short_id(short_id)
         short_qr = _get_short_qr_from_short_url(short_url)
+        payload = dict(
+            long_url=long_url,
+            short_id=short_id, short_url=short_url, short_qr=short_qr)
         if is_html:
-            return render_template(
-                'tinyurl/get.html',
-                long_url=long_url, short_id=short_id, short_url=short_url,
-                short_qr=short_qr)
+            return render_template('tinyurl/get.html', **payload)
         else:
-            return long_url, 200
+            return jsonify(payload), 200
 
 
 @blueprint.route('/api', methods=['POST'])
