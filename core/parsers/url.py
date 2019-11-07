@@ -44,10 +44,25 @@ def parse_url(url):
         port=url_obj.port or None)
 
 
-def encode_url(string):
-    """Retrun a streing that is url encoded.
+def url_encode(string):
+    """Retrun a string that is url encoded.
 
     Arguments:
     string -- Thes string to url encode.
     """
     return urllib.parse.quote(string, safe='')
+
+
+def qr_encode(string):
+    """Return an image url to the encoded string.
+
+    Arguments:
+    string -- The string encoded in the QR code.
+    """
+    return (
+        'https://chart.googleapis.com/chart'
+        '?cht=qr'
+        '&choe=UTF-8'
+        '&chs={width}x{height}'
+        '&chl={string_encoded}').format(
+            width=101, height=101, string_encoded=url_encode(string))

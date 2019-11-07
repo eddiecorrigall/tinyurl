@@ -4,7 +4,7 @@ from werkzeug.exceptions import BadRequest, NotFound
 
 from app.tinyurl import common, blueprint
 from app.tinyurl.forms import MakeForm, SearchForm
-from core.parsers import encode_url
+from core.parsers import qr_encode
 
 
 @blueprint.route('/', methods=['GET', 'POST'])
@@ -43,13 +43,6 @@ def get_info():
             'Only one of url or id parameters can be set in the query')
 
 
-def _get_short_qr_from_short_url(short_url):
-    return (
-        'https://chart.googleapis.com/chart'
-        '?cht=qr&chs=100x100&choe=UTF-8&chl={short_url}'.format(
-            short_url=encode_url(short_url)))
-
-
 def _get_info_from_long_url(long_url, is_html):
     # Sanitize user input
     current_app.logger.info('Request to GET shorten url {long_url}'.format(
@@ -61,7 +54,7 @@ def _get_info_from_long_url(long_url, is_html):
         raise NotFound('TinyURL does not exist')
     else:
         short_url = common.get_short_url_from_short_id(short_id)
-        short_qr = _get_short_qr_from_short_url(short_url)
+        short_qr = qr_encode(short_url)
         payload = dict(
             long_url=long_url,
             short_id=short_id, short_url=short_url, short_qr=short_qr)
@@ -82,7 +75,7 @@ def _get_info_from_short_id(short_id, is_html):
         raise NotFound('TinyURL does not exist')
     else:
         short_url = common.get_short_url_from_short_id(short_id)
-        short_qr = _get_short_qr_from_short_url(short_url)
+        short_qr = qr_encode(short_url)
         payload = dict(
             long_url=long_url,
             short_id=short_id, short_url=short_url, short_qr=short_qr)

@@ -1,7 +1,8 @@
 import pytest
 
 from core.parsers import BASE62, encode, decode
-from core.parsers import URL, is_url, in_alphabet, parse_url, encode_url
+from core.parsers import (
+    URL, is_url, in_alphabet, parse_url, url_encode, qr_encode)
 
 
 class TestParsersBaseConversion(object):
@@ -156,9 +157,28 @@ class TestParsersUrl(object):
             ('http://example.com', 'http%3A%2F%2Fexample.com', None),
         ]
     )
-    def test_encode_url(self, string, result, raises_exception):
+    def test_url_encode(self, string, result, raises_exception):
         def test():
-            assert encode_url(string) == result
+            assert url_encode(string) == result
+
+        if raises_exception:
+            with pytest.raises(raises_exception):
+                test()
+        else:
+            test()
+
+    @pytest.mark.parametrize(
+        ['string', 'result', 'raises_exception'],
+        [
+            (None, None, TypeError),
+            ('Hello world', '', None),
+        ]
+    )
+    def test_encode_as_qr(self, string, result, raises_exception):
+        def test():
+            result = qr_encode(string)
+            assert result is not None
+            assert is_url(result)
 
         if raises_exception:
             with pytest.raises(raises_exception):
