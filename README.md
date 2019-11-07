@@ -165,7 +165,3 @@ AWS DNS is unable to resolve the S3 path for the deploy. To continue developing,
 ---
 Lambda log collection is not supported in ca-central-1.
 > ServerlessError: No existing streams for the function
-
----
-Serverless cli is not logged in. Use `sls login` to login to the account to be able to deploy.
-> Exception at `Packaging required Python packages...`

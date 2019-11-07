@@ -18,9 +18,13 @@ custom:
   pythonRequirements:
     fileName: requirements.txt
     zip: true
+    usePipenv: false
+    noDeploy:
+      - pytest
+    pythonBin: python3.7
   wsgi:
     app: run.app
-    packRequirements: true
+    packRequirements: false  # Let serverless-python-requirements handle this
     pythonBin: python3.7
   customDomain:
     stage: ${self:custom.myStage}
