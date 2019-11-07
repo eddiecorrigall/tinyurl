@@ -152,6 +152,7 @@ class TestParsersUrl(object):
             (None, None, TypeError),
             ('', '', None),
             (' ', '%20', None),
+            ('+', '%2B', None),
             ('http://example.com', 'http%3A%2F%2Fexample.com', None),
         ]
     )
