@@ -1,7 +1,7 @@
 import pytest
 
 from core.parsers import BASE62, encode, decode
-from core.parsers import URL, is_url, in_alphabet, parse_url
+from core.parsers import URL, is_url, in_alphabet, parse_url, encode_url
 
 
 class TestParsersBaseConversion(object):
@@ -139,6 +139,25 @@ class TestParsersUrl(object):
     def test_parse_url(self, url, result, raises_exception):
         def test():
             assert parse_url(url) == result
+
+        if raises_exception:
+            with pytest.raises(raises_exception):
+                test()
+        else:
+            test()
+
+    @pytest.mark.parametrize(
+        ['string', 'result', 'raises_exception'],
+        [
+            (None, None, TypeError),
+            ('', '', None),
+            (' ', '%20', None),
+            ('http://example.com', 'http%3A%2F%2Fexample.com', None),
+        ]
+    )
+    def test_encode_url(self, string, result, raises_exception):
+        def test():
+            assert encode_url(string) == result
 
         if raises_exception:
             with pytest.raises(raises_exception):

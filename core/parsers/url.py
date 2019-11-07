@@ -1,8 +1,7 @@
+import urllib.parse
 import validators
 
 from collections import namedtuple
-from urllib.parse import urlparse
-
 
 URL = namedtuple(
     typename='URL',
@@ -33,7 +32,7 @@ def parse_url(url):
     """
     if not is_url(url):
         raise ValueError('Invalid url')
-    url_obj = urlparse(url)
+    url_obj = urllib.parse.urlparse(url)
     return URL(
         scheme=url_obj.scheme or None,
         path=url_obj.path or None,
@@ -43,3 +42,12 @@ def parse_url(url):
         password=url_obj.password or None,
         hostname=url_obj.hostname or None,
         port=url_obj.port or None)
+
+
+def encode_url(string):
+    """Retrun a streing that is url encoded.
+
+    Arguments:
+    string -- Thes string to url encode.
+    """
+    return urllib.parse.quote(string, safe='')
