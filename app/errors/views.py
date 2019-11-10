@@ -15,13 +15,11 @@ def _handle_error(message, status_code, exception=None):
         current_app.logger.info(message)
         if exception:
             current_app.logger.debug(exception)
-    response = jsonify(dict(message=message))
-    response.status_code = status_code
-    return response
+    return jsonify(dict(message=message)), status_code
 
 
 @blueprint.app_errorhandler(HTTPException)
-def handle_bad_request(http_error):
+def handle_http_exception(http_error):
     return _handle_error(
         message=http_error.description,
         status_code=http_error.code,
