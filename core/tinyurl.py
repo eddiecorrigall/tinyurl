@@ -6,18 +6,30 @@ from core.logger import root_logger as logger
 from services.tinyurl import TinyURLServiceRedis
 
 
+_SERVICE = None
+
+
 def _get_service():
-    logger.info('Creating TinyURLServiceRedis() instance')
-    return TinyURLServiceRedis(
-        logging_handler=default_handler,
-        get_redis_client=redis.get_instance(testing=False))
+    global _SERVICE
+    if _SERVICE is None:
+        logger.info('Creating TinyURLServiceRedis() instance')
+        _SERVICE = TinyURLServiceRedis(
+            logging_handler=default_handler,
+            get_redis_client=redis.get_instance(testing=False))
+    return _SERVICE
+
+
+_TEST_SERVICE = None
 
 
 def _get_test_service():
-    logger.info('Creating TinyURLServiceRedis() instance')
-    return TinyURLServiceRedis(
-        logging_handler=default_handler,
-        get_redis_client=redis.get_instance(testing=True))
+    global _TEST_SERVICE
+    if _TEST_SERVICE is None:
+        logger.info('Creating TinyURLServiceRedis() test instance')
+        _TEST_SERVICE = TinyURLServiceRedis(
+            logging_handler=default_handler,
+            get_redis_client=redis.get_instance(testing=True))
+    return _TEST_SERVICE
 
 
 def get_instance(testing):
